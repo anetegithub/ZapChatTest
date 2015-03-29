@@ -1,7 +1,7 @@
 ﻿<Window x:Class="ZapChatTest.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="400" Width="251">
+        Title="Contacts" Height="400" Width="251" Icon="open82.png">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="187*"/>

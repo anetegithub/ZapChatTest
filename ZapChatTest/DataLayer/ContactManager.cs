@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using System.Windows.Controls;
 
-namespace ZapChatTest.Logic
+namespace ZapChatTest.DataLayer
 {
     public class ContactManager
     {

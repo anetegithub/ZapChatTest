@@ -15,8 +15,8 @@ namespace ZapChatTest
     {
     }
 
-    public static class Util
+    public static class Data
     {
-        public static Logic.ContactManager Manager { get; set; }
+        public static DataLayer.ContactManager Manager { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ZapChatTest.Logic
+namespace ZapChatTest.DataLayer
 {
     public class Contact
     {
@@ -32,18 +32,30 @@ namespace ZapChatTest.Logic
                 _Name = value;
             }
         }        
-        private Random r = new Random();
+        private static Random r = new Random();
         public string Talk
         {
             get
-            { return Speech[r.Next(4)]; }
+            {
+                _LastReplica = Speech[r.Next(4)];
+                return _LastReplica;
+            }
+        }
+        private string _LastReplica { get; set; }
+        public string LastReplica
+        {
+            get
+            {
+                return _LastReplica;
+            }
         }
         protected List<string> Speech = new List<string>()
         {
-            "Привет!",
-            "Как дела?",
-            "Нормально...",
-            "Electric funeral?"
+            "Hi!",
+            "How are u?",
+            "What you think about spam-bots?",
+            "Electric funeral?",
+            "TODO : add some repl*",
         };
     }
 }

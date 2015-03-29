@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using ZapChatTest.DataLayer;
+
 namespace ZapChatTest
 {
     /// <summary>
@@ -20,14 +22,15 @@ namespace ZapChatTest
     /// </summary>
     public partial class MainWindow : Window
     {
-        MessageWindow MsgW = null;
-        InfoWindow InfoW = null;
-        TestWindow TestW = null;
+        public static MainWindow MainW = null;
+        public static MessageWindow MsgW = null;
+        public static InfoWindow InfoW = null;
+        public static TestWindow TestW = null;
 
         public MainWindow()
         {
             InitializeComponent();
-
+            MainW = this;
             //positions
             this.Height = SystemParameters.VirtualScreenHeight - 50;
             this.Left = SystemParameters.VirtualScreenWidth - this.Width;
@@ -50,13 +53,13 @@ namespace ZapChatTest
         private void InitContactList()
         {
             //init CL
-            Util.Manager = new Logic.ContactManager();
-            foreach (var c in Util.Manager.ContactList)
+            Data.Manager = new ContactManager();
+            foreach (var c in Data.Manager.ContactList)
             {
                 ContactsUI.Items.Add(c.Name);
             }
-            Util.Manager.SetListUI(ContactsUI);
-            Util.Manager.OnAdd += (Logic.Contact NewContact, ListView UIList) =>
+            Data.Manager.SetListUI(ContactsUI);
+            Data.Manager.OnAdd += (Contact NewContact, ListView UIList) =>
             {
                 UIList.Items.Add(NewContact.Name);
             };
@@ -74,19 +77,24 @@ namespace ZapChatTest
                     return;
 
                 string SelectedItem = (string)ContactsUI.ItemContainerGenerator.ItemFromContainer(dep);
-                if (MsgW == null)
-                {
-                    MsgW = new MessageWindow();
-                    InitMessageWindow(MsgW);
-                    MsgW.Show();
-                    MsgW.OpenNewTab((from a in Util.Manager.ContactList where a.Name == SelectedItem select a).ToList()[0]);
-                }
-                else
-                {
-                    MsgW.Focus();
-                    MsgW.OpenNewTab((from a in Util.Manager.ContactList where a.Name == SelectedItem select a).ToList()[0]);
-                }
+                MainWindow.ChatWith(SelectedItem,this);
             };
+        }
+
+        public static void ChatWith(string Contact,MainWindow Window)
+        {
+            if (MsgW == null)
+            {
+                MsgW = new MessageWindow();
+                Window.InitMessageWindow(MsgW);
+                MsgW.Show();
+                MsgW.TabWithThisContact((from a in Data.Manager.ContactList where a.Name == Contact select a).ToList()[0]);
+            }
+            else
+            {
+                MsgW.Focus();
+                MsgW.TabWithThisContact((from a in Data.Manager.ContactList where a.Name == Contact select a).ToList()[0]);
+            }
         }
 
         private void InitMessageWindow(MessageWindow TestW)

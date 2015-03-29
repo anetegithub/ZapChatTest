@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+using ZapChatTest.DataLayer;
+
 namespace ZapChatTest
 {
     /// <summary>
@@ -19,19 +21,50 @@ namespace ZapChatTest
     /// </summary>
     public partial class MessageWindow : Window
     {
-        private List<Logic.Contact> OpenedTabs = new List<Logic.Contact>();
+        private List<Contact> OpenedTabs = new List<Contact>();
 
         public MessageWindow()
         {
             InitializeComponent();
+            this.Closed += (object sender, EventArgs e) =>
+                {
+                    MainWindow.MsgW = null;
+                };
         }
 
-        public void OpenNewTab(Logic.Contact NewTab)
+        public void TabWithThisContact(Contact NewTab)
         {
             if (OpenedTabs.IndexOf(NewTab) == -1)
             {
                 OpenedTabs.Add(NewTab);
-                Tabs.Items.Add(new TabItem() { Header = NewTab.Name });
+
+
+                TabItem TItem = new TabItem();
+
+                ContextMenu ContextMenu = new System.Windows.Controls.ContextMenu();
+                MenuItem MenuItem = new MenuItem();
+                MenuItem.Header = "Close";
+                MenuItem.Click += (object sender, RoutedEventArgs e) =>
+                    {
+                        Tabs.Items.Remove(TItem);
+                        OpenedTabs.Remove((from a in OpenedTabs where a.Name == (TItem.Header as ContentControl).Content.ToString() select a).ToList()[0]);
+                        if (Tabs.Items.Count == 0)
+                        {
+                            MainWindow.MsgW = null;
+                            this.Close();
+                        }
+                    };
+                ContextMenu.Items.Add(MenuItem);
+                
+                var Header = new ContentControl
+                {
+                    Content = NewTab.Name,
+                    ContextMenu = ContextMenu
+                };
+
+                TItem.Header = Header;
+
+                Tabs.Items.Add(TItem);
                 (Tabs.Items[Tabs.Items.Count - 1] as TabItem).Focus();
                 
                 var stackPanel = new StackPanel();
@@ -48,12 +81,11 @@ namespace ZapChatTest
                     };
                 stackPanel.Children.Add(btn);
                 
-                (Tabs.Items[Tabs.Items.Count - 1] as TabItem).Content = stackPanel;
-                //tabItem.Content = stackPanel;
+                (Tabs.Items[Tabs.Items.Count - 1] as TabItem).Content = stackPanel;                
             }
             else
             {
-                int id = Tabs.Items.IndexOf((from object a in Tabs.Items where (a as TabItem).Header.ToString() == NewTab.Name select a).ToList()[0]);
+                int id = Tabs.Items.IndexOf((from object a in Tabs.Items where ((a as TabItem).Header as ContentControl).Content.ToString() == NewTab.Name select a).ToList()[0]);
                 (Tabs.Items[id] as TabItem).Focus();
             }
         }
